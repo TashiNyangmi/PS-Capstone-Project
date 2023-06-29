@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[5]:
+# In[1]:
 
 
 from pyspark.sql import SparkSession
@@ -18,17 +18,17 @@ from typing import List, Optional, Union
 import mysql.connector
 
 
-# In[6]:
+# In[2]:
 
 
-ss = SparkSession.builder.master('local[2]').appName('format_json').getOrCreate()
+spark = SparkSession.builder.master('local[2]').appName('format_json').getOrCreate()
 
 
 # ---
 
 # UDF
 
-# In[7]:
+# In[3]:
 
 
 def apply_format_phone_no(column: Union[str, Column]) -> Column:
@@ -65,7 +65,7 @@ def apply_format_phone_no(column: Union[str, Column]) -> Column:
             )
 
 
-# In[2]:
+# In[4]:
 
 
 def spark_to_sql(df: DataFrame, url: str, table_name: str = 'table1',  properties: Optional[dict] = None) -> None:
@@ -104,17 +104,17 @@ def spark_to_sql(df: DataFrame, url: str, table_name: str = 'table1',  propertie
 
 # 1. Dataset: Custmer
 
-# In[12]:
+# In[5]:
 
 
 customer_json = 'data/raw_data/cdw_sapp_custmer.json'
 
-customer_df = ss.read\
+customer_df = spark.read\
             .option("multiline", False)\
             .json(customer_json)
 
 
-# In[13]:
+# In[6]:
 
 
 customer_df = (customer_df
@@ -130,17 +130,17 @@ customer_df = (customer_df
 
 # 2. Dataset: Branch
 
-# In[14]:
+# In[7]:
 
 
 branch_json = 'data/raw_data/cdw_sapp_branch.json'
 
-branch_df = ss.read\
+branch_df = spark.read\
             .option("multiline", False)\
             .json(branch_json)
 
 
-# In[15]:
+# In[8]:
 
 
 branch_df = branch_df.fillna(99999, subset = 'BRANCH_ZIP')
@@ -151,16 +151,16 @@ branch_df = branch_df.withColumn('BRANCH_PHONE', apply_format_phone_no('BRANCH_P
 
 # 3. Dataset: Credit
 
-# In[16]:
+# In[9]:
 
 
 credit_json = 'data/raw_data/cdw_sapp_credit.json'
-credit_df = ss.read\
+credit_df = spark.read\
             .option('multiline', False)\
             .json(credit_json)
 
 
-# In[17]:
+# In[10]:
 
 
 credit_df = credit_df.withColumn('TIMEID', concat_ws('', 
@@ -173,7 +173,7 @@ credit_df = credit_df.withColumn('TIMEID', concat_ws('',
 
 # ### SQL
 
-# In[18]:
+# In[11]:
 
 
 # Connect to the MySQL server
@@ -185,16 +185,15 @@ conn = mysql.connector.connect(
 )
 
 
-# In[19]:
+# In[12]:
 
 
 db_name = 'creditcard_capstone'
 cursor = conn.cursor()
-cursor.execute(f'DROP DATABASE IF EXISTS {db_name};')
-cursor.execute(f'CREATE DATABASE {db_name};')
+cursor.execute(f'CREATE DATABASE IF NOT EXISTS {db_name};')
 
 
-# In[20]:
+# In[13]:
 
 
 url = f'jdbc:mysql://localhost:3306/{db_name}'
@@ -205,12 +204,19 @@ properties = {
 }
 
 
-# In[21]:
+# In[14]:
 
 
-spark_to_sql(customer_df, table_name='customer', url = url, properties = properties)
-spark_to_sql(branch_df, table_name='branch', url = url, properties = properties)
-spark_to_sql(credit_df, table_name='credit', url = url, properties = properties)
+customer_df.show()
+
+
+# In[15]:
+
+
+spark_to_sql(customer_df, table_name='CDW_SAPP_CUSTOMER ', url = url, properties = properties)
+spark_to_sql(branch_df, table_name='CDW_SAPP_BRANCH', url = url, properties = properties)
+spark_to_sql(credit_df, table_name='CDW_SAPP_CREDIT_CARD', url = url, properties = properties)
+spark.stop()
 
 
 # ---
