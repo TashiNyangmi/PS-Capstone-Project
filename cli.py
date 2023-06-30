@@ -4,9 +4,10 @@ from pyspark.sql.utils import AnalysisException
 
 import os
 import time
-import keyboard
+
 
 # UDF
+from creds import read_cred_from_file
 from get_user_choice import get_user_choice
 from spark_queries import transactions_by_zip_month_year,\
                           transaction_total_and_no_by_type,\
@@ -55,16 +56,18 @@ def read_table_from_mysql(spark: SparkSession, url: str, table: str, properties:
         raise ValueError(f"Error reading table '{table}' from MySQL: {str(e)}")
 
 
-
 # Spark configuration
 spark = create_spark_session('Query MySQL database: creditcard_capstone')
+
+# Access the MySQL credentials
+username, password = read_cred_from_file()
 
 # MySQL connection properties
 mysql_database_name = 'creditcard_capstone'
 mysql_url = f'jdbc:mysql://localhost:3306/{mysql_database_name}'
 mysql_properties = {
-    'user': 'root',
-    'password': 'password'
+    'user': username,
+    'password': password
 }
 
 # Read tables from MySQL

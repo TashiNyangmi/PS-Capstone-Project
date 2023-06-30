@@ -16,6 +16,7 @@ from pyspark.sql.functions import col, \
 from typing import List, Optional, Union
 
 import mysql.connector
+from creds import read_cred_from_file
 
 
 # In[2]:
@@ -176,12 +177,14 @@ credit_df = credit_df.withColumn('TIMEID', concat_ws('',
 # In[11]:
 
 
+username, password = read_cred_from_file()
+
 # Connect to the MySQL server
 conn = mysql.connector.connect(
     host='localhost',
     port='3306',
-    user='root',
-    password='password'
+    user=username,
+    password=password
 )
 
 
