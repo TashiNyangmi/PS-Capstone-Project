@@ -3,3 +3,10 @@ py4j==0.10.9.7
 pyspark==3.4.1
 SQLAlchemy==2.0.17
 typing_extensions==4.7.0
+greenlet==2.0.2
+mysql==0.0.3
+mysqlclient==2.2.0
+py4j==0.10.9.7
+pyspark==3.4.1
+SQLAlchemy==2.0.17
+typing_extensions==4.7.0
