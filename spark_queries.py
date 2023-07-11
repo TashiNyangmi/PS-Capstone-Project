@@ -1,6 +1,5 @@
 from pyspark.sql import DataFrame
 
-from pyspark.sql.types import DateType
 from pyspark.sql.functions import count, sum, col, when, to_date
 from sqlalchemy import create_engine, text
 

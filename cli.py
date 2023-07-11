@@ -5,7 +5,6 @@ from pyspark.sql.utils import AnalysisException
 import os
 import time
 
-
 # UDF
 from creds import read_cred_from_file
 from get_user_choice import get_user_choice
