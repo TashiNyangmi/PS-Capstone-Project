@@ -1,5 +1,11 @@
 # PS-Capstone-Project
 
+
+Install mysql version: 8.0.34
+Recommended installer download link: https://dev.mysql.com/downloads/
+
+
+
 Tools used:
 1) Python
 2) MySQL
