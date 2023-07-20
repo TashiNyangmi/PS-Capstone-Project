@@ -28,6 +28,9 @@ from mysql.connector import Error
 
 from datetime import datetime
 
+
+
+
 def get_zipcode() -> str:
     """
     Prompts the user to enter a valid 5-digit zipcode.
